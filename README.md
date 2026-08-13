@@ -1,5 +1,8 @@
 # Home Assistant Network Topology
 
+[![Open your Home Assistant instance and open this repository inside HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=rz467fzs7d&repository=homeassistant-network-topology&category=integration)
+[![Open your Home Assistant instance and start setting up Network Topology.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start?domain=network_topology)
+
 Read-only Home Assistant custom integration for visualizing network client
 topology and exposing client-to-access-point attachment as `device_tracker`
 entities.
