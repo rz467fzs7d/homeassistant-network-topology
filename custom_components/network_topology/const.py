@@ -14,8 +14,6 @@ CONF_PASSWORD = "password"
 CONF_SCAN_INTERVAL = "scan_interval"
 
 DEFAULT_ADAPTER = "tplink"
-DEFAULT_HOST = "192.168.0.1"
-DEFAULT_USERNAME = "root"
 DEFAULT_SCAN_INTERVAL = 60
 
 PLATFORMS = ["device_tracker"]

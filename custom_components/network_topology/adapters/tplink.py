@@ -7,7 +7,6 @@ from typing import Any
 from urllib.parse import unquote
 
 from .base import AdapterResult, ClientDevice, TopologyAdapter
-from ..const import DEFAULT_HOST, DEFAULT_USERNAME
 
 CONF_HOST = "host"
 CONF_USERNAME = "username"
@@ -47,8 +46,8 @@ class TPLinkAdapter(TopologyAdapter):
 
         return vol.Schema(
             {
-                vol.Required(CONF_HOST, default=DEFAULT_HOST): str,
-                vol.Required(CONF_USERNAME, default=DEFAULT_USERNAME): str,
+                vol.Required(CONF_HOST): str,
+                vol.Required(CONF_USERNAME): str,
                 vol.Required(CONF_PASSWORD): str,
             }
         )

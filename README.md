@@ -70,9 +70,9 @@ The integration is configured through the UI.
 
 For TP-Link routers:
 
-- Host: router IP address, for example `192.168.0.1`
-- Username: usually `root` on supported TP-Link SMB routers
-- Password: router web password
+- Host: router address reachable from Home Assistant
+- Username: router web UI username
+- Password: router web UI password
 - Scan interval: polling interval in seconds
 
 ## Automation Example
