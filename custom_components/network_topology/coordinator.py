@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 import logging
 
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import CONF_ADAPTER, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN
 from .adapters import ADAPTERS
@@ -24,6 +24,7 @@ class NetworkTopologyCoordinator(DataUpdateCoordinator):
         adapter_cls = ADAPTERS[self.adapter_key]
         options = dict(entry.data)
         options.update(entry.options)
+        self._host = options.get("host", "unknown")
         self.adapter = adapter_cls(
             hass=hass,
             **{
@@ -38,14 +39,41 @@ class NetworkTopologyCoordinator(DataUpdateCoordinator):
             name=f"{DOMAIN}_{self.adapter_key}",
             update_interval=timedelta(seconds=options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)),
         )
+        _LOGGER.debug(
+            "Initialized network topology coordinator adapter=%s host=%s scan_interval=%ss",
+            self.adapter_key,
+            self._host,
+            options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+        )
 
     async def _async_update_data(self):
         """Fetch adapter data and update the store in one poll."""
 
         try:
+            _LOGGER.debug(
+                "Refreshing network topology adapter=%s host=%s",
+                self.adapter_key,
+                self._host,
+            )
             result = await self.adapter.fetch()
         except Exception as exc:
             self.store.set_error(exc)
-            raise
+            _LOGGER.exception(
+                "Failed to refresh network topology adapter=%s host=%s error_type=%s",
+                self.adapter_key,
+                self._host,
+                type(exc).__name__,
+            )
+            raise UpdateFailed(
+                f"{self.adapter_key} topology refresh failed for {self._host}: "
+                f"{type(exc).__name__}: {exc}"
+            ) from exc
         self.store.update_from_result(result, source=f"{self.adapter_key}-live")
+        _LOGGER.debug(
+            "Refreshed network topology adapter=%s host=%s devices=%s root=%s",
+            self.adapter_key,
+            self._host,
+            len(result.devices),
+            result.root_label,
+        )
         return result

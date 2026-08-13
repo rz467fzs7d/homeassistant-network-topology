@@ -39,6 +39,9 @@ class TopologyStore:
     def set_error(self, error: Exception | str) -> None:
         """Keep the last good snapshot while exposing refresh failure."""
 
+        if isinstance(error, Exception):
+            self._last_error = f"{type(error).__name__}: {error}"
+            return
         self._last_error = str(error)
 
     def snapshot(self) -> dict[str, Any]:

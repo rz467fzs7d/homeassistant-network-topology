@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import voluptuous as vol
@@ -17,6 +18,8 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
 )
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class NetworkTopologyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -59,10 +62,25 @@ class NetworkTopologyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 await _validate_input(self.hass, adapter_cls, data)
             except InvalidAuth:
+                _LOGGER.warning(
+                    "Network topology config validation failed: invalid auth adapter=%s host=%s",
+                    adapter_key,
+                    data[CONF_HOST],
+                )
                 errors["base"] = "invalid_auth"
             except CannotConnect:
+                _LOGGER.warning(
+                    "Network topology config validation failed: cannot connect adapter=%s host=%s",
+                    adapter_key,
+                    data[CONF_HOST],
+                )
                 errors["base"] = "cannot_connect"
             else:
+                _LOGGER.debug(
+                    "Network topology config validation succeeded adapter=%s host=%s",
+                    adapter_key,
+                    data[CONF_HOST],
+                )
                 return self.async_create_entry(title=f"{adapter_cls.label} {data[CONF_HOST]}", data=data)
 
         schema = adapter_cls.config_schema().extend(
@@ -95,10 +113,25 @@ class NetworkTopologyOptionsFlow(config_entries.OptionsFlow):
             try:
                 await _validate_input(self.hass, adapter_cls, merged)
             except InvalidAuth:
+                _LOGGER.warning(
+                    "Network topology options validation failed: invalid auth adapter=%s host=%s",
+                    defaults[CONF_ADAPTER],
+                    merged[CONF_HOST],
+                )
                 errors["base"] = "invalid_auth"
             except CannotConnect:
+                _LOGGER.warning(
+                    "Network topology options validation failed: cannot connect adapter=%s host=%s",
+                    defaults[CONF_ADAPTER],
+                    merged[CONF_HOST],
+                )
                 errors["base"] = "cannot_connect"
             else:
+                _LOGGER.debug(
+                    "Network topology options validation succeeded adapter=%s host=%s",
+                    defaults[CONF_ADAPTER],
+                    merged[CONF_HOST],
+                )
                 options = dict(user_input)
                 if not options.get(CONF_PASSWORD):
                     options.pop(CONF_PASSWORD, None)
@@ -120,6 +153,13 @@ async def _validate_input(hass, adapter_cls, data: dict[str, Any]) -> None:
     try:
         await adapter.fetch()
     except Exception as exc:  # noqa: BLE001 - config flow maps transport errors to UI
+        _LOGGER.debug(
+            "Network topology adapter validation raised adapter=%s host=%s error_type=%s",
+            data[CONF_ADAPTER],
+            data[CONF_HOST],
+            type(exc).__name__,
+            exc_info=True,
+        )
         if "authorize" in str(exc).lower() or "stok" in str(exc).lower():
             raise InvalidAuth from exc
         raise CannotConnect from exc

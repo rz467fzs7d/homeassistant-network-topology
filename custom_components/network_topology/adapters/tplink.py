@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from types import SimpleNamespace
 from typing import Any
 from urllib.parse import unquote
@@ -11,6 +12,8 @@ from .base import AdapterResult, ClientDevice, TopologyAdapter
 CONF_HOST = "host"
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
+
+_LOGGER = logging.getLogger(__name__)
 
 try:  # pragma: no cover - exercised in Home Assistant runtime.
     from tplinkrouterc6u import TPLinkRClient
@@ -62,20 +65,40 @@ class TPLinkAdapter(TopologyAdapter):
             raise RuntimeError("tplinkrouterc6u is not installed")
         client = self._client or TPLinkRClient(self._host, self._username, self._password)
         try:
+            _LOGGER.debug("Authorizing TP-Link topology session host=%s", self._host)
             client.authorize()
             result = self._read_client(client)
         except Exception:
+            _LOGGER.debug(
+                "TP-Link topology session failed host=%s; retrying with a fresh session",
+                self._host,
+                exc_info=True,
+            )
             self._client = None
             client = TPLinkRClient(self._host, self._username, self._password)
             client.authorize()
             result = self._read_client(client)
         self._client = client
+        _LOGGER.debug(
+            "Fetched TP-Link topology host=%s root=%s devices=%s",
+            self._host,
+            result.root_label,
+            len(result.devices),
+        )
         return result
 
     def _read_client(self, client: Any) -> AdapterResult:
         firmware = _as_mapping(client.get_firmware())
         status = client.get_status()
         devices = [_map_device(device) for device in _status_devices(status)]
+        raw_count = len(devices)
+        mapped_count = sum(1 for device in devices if device.mac)
+        _LOGGER.debug(
+            "Parsed TP-Link topology host=%s raw_devices=%s mapped_devices=%s",
+            self._host,
+            raw_count,
+            mapped_count,
+        )
         return AdapterResult(
             devices=[device for device in devices if device.mac],
             root_label=str(firmware.get("model") or firmware.get("hardware_version") or self._host),
