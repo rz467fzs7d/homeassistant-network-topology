@@ -1,0 +1,6 @@
+{
+  "name": "Network Topology",
+  "render_readme": true,
+  "domains": ["network_topology"],
+  "homeassistant": "2024.12.0"
+}

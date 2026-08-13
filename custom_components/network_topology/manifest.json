@@ -1,0 +1,12 @@
+{
+  "domain": "network_topology",
+  "name": "Network Topology",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["http"],
+  "documentation": "https://github.com/local/homelab-toolkit",
+  "integration_type": "hub",
+  "iot_class": "local_polling",
+  "requirements": ["tplinkrouterc6u==5.28.1"],
+  "version": "0.1.0"
+}
