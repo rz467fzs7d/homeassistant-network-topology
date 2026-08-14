@@ -3,15 +3,15 @@
     "step": {
       "user": {
         "title": "Network Topology",
-        "description": "Choose a network topology data source.",
+        "description": "Choose the network vendor and controller model.",
         "data": {
-          "adapter": "Adapter"
+          "adapter": "Brand / model"
         }
       },
       "adapter": {
-        "title": "Network Topology Source",
+        "title": "TP-Link TL-R489GP-AC",
         "data": {
-          "host": "Host",
+          "host": "Controller host",
           "username": "Username",
           "password": "Password",
           "scan_interval": "Scan interval in seconds"
@@ -28,7 +28,7 @@
       "init": {
         "title": "Network Topology Options",
         "data": {
-          "host": "Host",
+          "host": "Controller host",
           "username": "Username",
           "password": "Password",
           "scan_interval": "Scan interval in seconds"

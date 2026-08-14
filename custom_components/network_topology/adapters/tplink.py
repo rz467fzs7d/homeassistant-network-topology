@@ -26,7 +26,7 @@ class TPLinkAdapter(TopologyAdapter):
     """Fetch client/AP topology from a TP-Link local router session."""
 
     key = "tplink"
-    label = "TP-Link Router"
+    label = "TP-Link TL-R489GP-AC"
 
     def __init__(
         self,
