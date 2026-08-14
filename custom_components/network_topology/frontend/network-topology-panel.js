@@ -65,7 +65,7 @@ class NetworkTopologyPanel extends LitElement {
 
   async _loadRenderer() {
     try {
-      await import("./network-topology-graph-card.js?v=20260622-refresh-progress");
+      await import("./network-topology-graph-card.js?v=20260814-loading-state");
       this._rendererReady = true;
       await this.updateComplete;
       this._syncCard();

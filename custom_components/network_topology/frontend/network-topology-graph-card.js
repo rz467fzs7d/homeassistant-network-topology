@@ -89,8 +89,8 @@ class NetworkTopologyGraphCard extends HTMLElement {
         devices: this._topology?.devices?.length || 0,
       });
     } catch (error) {
-      this._error = error?.message || String(error);
-      this._debug("fetch topology failed", this._error);
+      this._error = this._errorMessage(error);
+      this._debug("fetch topology failed", { error, message: this._error });
     } finally {
       this._loading = false;
       this._render();
@@ -223,12 +223,65 @@ class NetworkTopologyGraphCard extends HTMLElement {
           }
         }
         .graph {
+          position: relative;
           height: min(68vh, 760px);
           min-height: 520px;
           margin: 0 12px 12px;
           border: 1px solid var(--divider-color);
           border-radius: 8px;
           background: var(--card-background-color);
+        }
+        .placeholder {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          padding: 24px;
+          text-align: center;
+          color: var(--secondary-text-color);
+          background:
+            radial-gradient(circle at center, color-mix(in srgb, var(--primary-color) 8%, transparent) 0 1px, transparent 1px) 0 0 / 20px 20px,
+            var(--card-background-color);
+        }
+        .placeholder-card {
+          max-width: 460px;
+          border: 1px solid var(--divider-color);
+          border-radius: 10px;
+          padding: 18px 20px;
+          background: color-mix(in srgb, var(--card-background-color) 94%, var(--primary-color));
+          box-shadow: var(--ha-card-box-shadow, none);
+        }
+        .placeholder-title {
+          margin: 0 0 6px;
+          color: var(--primary-text-color);
+          font-size: 15px;
+          font-weight: 650;
+        }
+        .placeholder-text {
+          margin: 0;
+          font-size: 12px;
+          line-height: 1.45;
+        }
+        .spinner {
+          width: 28px;
+          height: 28px;
+          margin: 0 auto 12px;
+          border: 3px solid color-mix(in srgb, var(--primary-color) 18%, transparent);
+          border-top-color: var(--primary-color);
+          border-radius: 999px;
+          animation: network-spin 0.9s linear infinite;
+        }
+        @keyframes network-spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        .placeholder.error .placeholder-card {
+          border-color: color-mix(in srgb, var(--error-color) 42%, var(--divider-color));
+          background: color-mix(in srgb, var(--card-background-color) 86%, var(--error-color));
+        }
+        .placeholder.error .placeholder-title {
+          color: var(--error-color);
         }
         @media (max-width: 720px) {
           .header {
@@ -264,7 +317,7 @@ class NetworkTopologyGraphCard extends HTMLElement {
           ${this._statusText()}
         </div>
         ${this._loading ? `<div class="progress" role="progressbar" aria-label="Refreshing topology"></div>` : ""}
-        <div class="graph"></div>
+        <div class="graph">${this._graphPlaceholder()}</div>
       </ha-card>
     `;
     this.shadowRoot.querySelector(".refresh")?.addEventListener("click", () => this._fetchTopology());
@@ -605,6 +658,70 @@ class NetworkTopologyGraphCard extends HTMLElement {
     const source = this._topology?.source || "unknown source";
     const warning = refresh && refresh.ok === false ? `; refresh failed: ${refresh.last_error}` : "";
     return `Updated ${label}; source: ${source}${warning}`;
+  }
+
+  _graphPlaceholder() {
+    if (this._loading && !this._hasRenderableTopology()) {
+      return `
+        <div class="placeholder loading">
+          <div class="placeholder-card">
+            <div class="spinner" aria-hidden="true"></div>
+            <p class="placeholder-title">Loading topology</p>
+            <p class="placeholder-text">Connecting to Home Assistant and reading the latest TP-Link AC/AP data.</p>
+          </div>
+        </div>
+      `;
+    }
+    if (this._error && !this._hasRenderableTopology()) {
+      return `
+        <div class="placeholder error">
+          <div class="placeholder-card">
+            <p class="placeholder-title">Topology is unavailable</p>
+            <p class="placeholder-text">${this._escape(this._error)}</p>
+          </div>
+        </div>
+      `;
+    }
+    if (!this._hasRenderableTopology()) {
+      return `
+        <div class="placeholder">
+          <div class="placeholder-card">
+            <p class="placeholder-title">Waiting for topology data</p>
+            <p class="placeholder-text">The integration has not returned network devices yet.</p>
+          </div>
+        </div>
+      `;
+    }
+    return "";
+  }
+
+  _hasRenderableTopology() {
+    return Boolean(this._topology && (this._topology.root || (this._topology.devices || []).length));
+  }
+
+  _errorMessage(error) {
+    if (!error) {
+      return "Unknown error";
+    }
+    if (typeof error === "string") {
+      return error;
+    }
+    const candidates = [
+      error.message,
+      error.error,
+      error.code,
+      error.statusText,
+      error.body?.message,
+      error.body?.error,
+    ].filter(Boolean);
+    if (candidates.length) {
+      return candidates.join(": ");
+    }
+    try {
+      return JSON.stringify(error);
+    } catch (_err) {
+      return String(error);
+    }
   }
 
   _rssiValue(rssi) {
