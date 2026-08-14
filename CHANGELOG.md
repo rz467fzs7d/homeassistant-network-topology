@@ -11,6 +11,13 @@ This project follows semantic versioning:
 Every user-visible update must change `custom_components/network_topology/manifest.json`
 and add a matching entry below.
 
+## 0.1.3 - 2026-08-14
+
+- Add adapter metadata for brand, model, and icon.
+- Add a diagnostic topology source sensor for each configured instance with
+  brand-specific icon and device registry metadata.
+- Add a project icon asset for the integration package.
+
 ## 0.1.2 - 2026-08-14
 
 - Add the custom integration translation file so setup fields show

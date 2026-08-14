@@ -16,4 +16,4 @@ CONF_SCAN_INTERVAL = "scan_interval"
 DEFAULT_ADAPTER = "tplink"
 DEFAULT_SCAN_INTERVAL = 60
 
-PLATFORMS = ["device_tracker"]
+PLATFORMS = ["device_tracker", "sensor"]

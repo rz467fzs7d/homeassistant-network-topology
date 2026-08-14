@@ -34,6 +34,9 @@ class TopologyAdapter(ABC):
 
     key: str
     label: str
+    brand: str = "Network"
+    model: str = "Topology Controller"
+    icon: str = "mdi:access-point-network"
 
     @classmethod
     @abstractmethod

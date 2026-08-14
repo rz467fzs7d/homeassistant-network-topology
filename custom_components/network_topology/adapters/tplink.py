@@ -27,6 +27,9 @@ class TPLinkAdapter(TopologyAdapter):
 
     key = "tplink"
     label = "TP-Link TL-R489GP-AC"
+    brand = "TP-Link"
+    model = "TL-R489GP-AC"
+    icon = "mdi:router-network"
 
     def __init__(
         self,
