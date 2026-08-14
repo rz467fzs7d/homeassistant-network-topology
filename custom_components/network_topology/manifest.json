@@ -4,7 +4,7 @@
   "codeowners": [],
   "config_flow": true,
   "dependencies": ["http"],
-  "documentation": "https://github.com/local/homelab-toolkit",
+  "documentation": "https://github.com/rz467fzs7d/homeassistant-network-topology",
   "integration_type": "hub",
   "iot_class": "local_polling",
   "requirements": [],
