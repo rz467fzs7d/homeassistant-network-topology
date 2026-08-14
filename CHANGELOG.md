@@ -11,6 +11,11 @@ This project follows semantic versioning:
 Every user-visible update must change `custom_components/network_topology/manifest.json`
 and add a matching entry below.
 
+## 0.1.2 - 2026-08-14
+
+- Add the custom integration translation file so setup fields show
+  user-facing brand/model labels instead of raw internal keys.
+
 ## 0.1.1 - 2026-08-14
 
 - Present topology source setup as a user-facing brand/model choice instead of

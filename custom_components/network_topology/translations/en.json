@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Network Topology",
+        "description": "Choose the network vendor and controller model.",
+        "data": {
+          "adapter": "Brand / model"
+        }
+      },
+      "adapter": {
+        "title": "TP-Link TL-R489GP-AC",
+        "data": {
+          "host": "Controller host",
+          "username": "Username",
+          "password": "Password",
+          "scan_interval": "Scan interval in seconds"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "invalid_auth": "Invalid authentication"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Network Topology Options",
+        "data": {
+          "host": "Controller host",
+          "username": "Username",
+          "password": "Password",
+          "scan_interval": "Scan interval in seconds"
+        }
+      }
+    }
+  }
+}
