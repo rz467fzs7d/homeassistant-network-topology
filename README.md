@@ -216,10 +216,39 @@ Run syntax checks:
 
 ```bash
 python3 -m compileall custom_components
+python3 scripts/check_version.py
 ```
 
 The normalization and graph-building layers are designed to be tested without a
 live router.
+
+## Versioning And Releases
+
+Every update must bump the integration version in:
+
+```text
+custom_components/network_topology/manifest.json
+```
+
+The same version must also have a matching `CHANGELOG.md` section. The project
+uses semantic versioning:
+
+- `PATCH`: bug fixes, diagnostics, copy changes, compatibility fixes
+- `MINOR`: new adapters, new entities, new frontend capabilities
+- `MAJOR`: incompatible config entry, data model, API, or migration changes
+
+Use the helper when preparing a release:
+
+```bash
+python3 scripts/bump_version.py 0.1.2 --message "Describe the release."
+python3 scripts/check_version.py
+git commit -am "chore: release 0.1.2"
+git tag v0.1.2
+git push && git push origin v0.1.2
+```
+
+HACS users should install from GitHub releases/tags, so a version bump is part
+of every change that should reach installed Home Assistant systems.
 
 ## Status
 
